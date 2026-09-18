@@ -1,34 +1,11 @@
 [
   {
-    "source": "Haute Autorité de l'Audit (H2A)",
-    "titre": "Décision à l’égard de M. François Jégard et la société Léo Jégard et Associés",
-    "lien": "https://h2a-france.org/publications/decision-a-legard-de-m-francois-jegard-et-la-societe-leo-jegard-et-associes/",
-    "categorie": "Audit",
-    "resume": "Décision à l’égard de M. François Jégard et la société Léo Jégard et Associés",
-    "impact_pratique": "Information réglementaire importante relative au domaine : Audit."
-  },
-  {
-    "source": "Haute Autorité de l'Audit (H2A)",
-    "titre": "Synthèse du programme de contrôle 2025",
-    "lien": "https://h2a-france.org/publications/synthese-du-programme-de-controle-2025/",
-    "categorie": "Audit",
-    "resume": "Synthèse du programme de contrôle 2025",
-    "impact_pratique": "Information réglementaire importante relative au domaine : Audit."
-  },
-  {
-    "source": "Haute Autorité de l'Audit (H2A)",
-    "titre": "Décision à l’égard de M. Régis Le Calonnec",
-    "lien": "https://h2a-france.org/publications/decision-a-legard-de-m-regis-le-calonnec-2/",
-    "categorie": "Audit",
-    "resume": "Décision à l’égard de M. Régis Le Calonnec",
-    "impact_pratique": "Information réglementaire importante relative au domaine : Audit."
-  },
-  {
-    "source": "Autorité des Normes Comptables (ANC)",
-    "titre": "Règlement ANC relatif au Plan Comptable Général et normes de durabilité",
-    "lien": "https://www.anc.gouv.fr/",
-    "categorie": "Comptabilité",
-    "resume": "Mise à jour des règles d'arrêté des comptes, du plan comptable général (PCG) et des normes de reporting de durabilité.",
-    "impact_pratique": "Information réglementaire importante relative au domaine : Comptabilité."
+    "source": "BOFiP-Impôts (DGFIP)",
+    "titre": "Actualités réglementaires et commentaires de doctrine fiscale",
+    "lien": "https://bofip.impots.gouv.fr/",
+    "categorie": "Fiscalité",
+    "date": "18/09/2026",
+    "resume": "Consultez les édictions et rescrits fiscaux récents publiés au Bulletin Officiel des Finances Publiques.",
+    "impact_pratique": "Publication du 18/09/2026 — À intégrer dans la veille réglementaire Fiscalité."
   }
 ]
