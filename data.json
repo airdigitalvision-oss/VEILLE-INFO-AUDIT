@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "source": "Le Monde - Économie",
+    "titre": "A Tarascon, l’Etat prend la main sur l’usine Fibre Excellence pour cause de « mises en danger de l’environnement »",
+    "lien": "https://www.lemonde.fr/economie/article/2026/09/18/a-tarascon-l-etat-prend-la-main-sur-l-usine-fibre-excellence-pour-cause-de-mises-en-danger-de-l-environnement_6776829_3234.html",
+    "categorie": "Fiscalité",
+    "resume": "Evoquant « l’incurie » des liquidateurs, le ministre délégué de la transition écologique, Mathieu Lefèvre, demande à l’Ademe d’intervenir en urgence sur le site industriel.",
+    "impact_pratique": "Information importante relative au domaine : Fiscalité."
+  },
+  {
+    "source": "Le Monde - Économie",
+    "titre": "Le Kremlin confisque les actifs russes d’Auchan, de Leroy Merlin et Nestlé",
+    "lien": "https://www.lemonde.fr/economie/article/2026/09/18/le-kremlin-confisque-les-actifs-russes-d-auchan-leroy-merlin-et-nestle_6776824_3234.html",
+    "categorie": "Fiscalité",
+    "resume": "Le décret de Vladimir Poutine est tombé tard jeudi 17 septembre. Il confie les actifs en Russie de ces multinationales ainsi que ceux de FM Logistic à une microentreprise russe inconnue, société-écran...",
+    "impact_pratique": "Information importante relative au domaine : Fiscalité."
+  },
+  {
+    "source": "Le Monde - Économie",
+    "titre": "« Notre santé est mise à l’épreuve » : à Nîmes, des femmes de chambre d’un cinq-étoiles en grève réclament de meilleures conditions de travail",
+    "lien": "https://www.lemonde.fr/economie/article/2026/09/18/notre-sante-est-mise-a-l-epreuve-a-nimes-des-femmes-de-chambre-d-un-cinq-etoiles-en-greve-reclament-de-meilleures-conditions-de-travail_6776813_3234.html",
+    "categorie": "Fiscalité",
+    "resume": "Pour la deuxième fois en quelques semaines, les femmes de chambre de l’hôtel Maison Albar-L’Impérator, un prestigieux hôtel cinq étoiles de Nîmes, étaient en grève vendredi 18 septembre.",
+    "impact_pratique": "Information importante relative au domaine : Fiscalité."
+  }
+]
