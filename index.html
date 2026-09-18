@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veille Fiscale, Comptable & Audit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 p-6">
+    <div class="max-w-5xl mx-auto">
+        <header class="mb-8 border-b pb-4">
+            <h1 class="text-3xl font-bold text-slate-900">📊 Veille Fiscale & Comptable</h1>
+            <p class="text-slate-600 mt-1">Plateforme automatisée d'actualités réglementaires</p>
+        </header>
+
+        <!-- Barre de recherche et filtres -->
+        <div class="mb-6 flex flex-col sm:flex-row gap-4">
+            <input type="text" id="searchInput" onkeyup="filtrer()" placeholder="Rechercher un mot-clé (ex: TVA, BNC, IS, Amortissement)..." 
+                   class="flex-1 p-3 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            
+            <select id="categoryFilter" onchange="filtrer()" class="p-3 border border-slate-300 rounded-lg bg-white shadow-sm outline-none">
+                <option value="toutes">Toutes les catégories</option>
+                <option value="Fiscalité">Fiscalité</option>
+                <option value="Comptabilité">Comptabilité</option>
+                <option value="Audit">Audit</option>
+                <option value="Droit">Droit</option>
+            </select>
+        </div>
+
+        <!-- Conteneur des articles -->
+        <div id="articlesContainer" class="grid gap-4">
+            <p class="text-slate-500">Chargement de la veille...</p>
+        </div>
+    </div>
+
+    <script>
+        let tousLesArticles = [];
+
+        async function chargerVeille() {
+            try {
+                const res = await fetch('data.json');
+                tousLesArticles = await res.json();
+                afficherArticles(tousLesArticles);
+            } catch (err) {
+                document.getElementById('articlesContainer').innerHTML = `<p class="text-red-500">Aucune donnée disponible pour le moment. Lance le workflow sur GitHub.</p>`;
+            }
+        }
+
+        function afficherArticles(list) {
+            const container = document.getElementById('articlesContainer');
+            if (list.length === 0) {
+                container.innerHTML = `<p class="text-slate-500">Aucun résultat trouvé.</p>`;
+                return;
+            }
+
+            container.innerHTML = list.map(item => `
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex justify-between items-start gap-2 mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">${item.categorie || 'Général'}</span>
+                        <span class="text-xs text-slate-400">${item.source || ''}</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2">
+                        <a href="${item.lien}" target="_blank" class="hover:text-blue-600 underline">${item.titre}</a>
+                    </h2>
+                    <p class="text-slate-600 mb-3">${item.resume || ''}</p>
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-3 rounded text-sm text-amber-900">
+                        <strong>Impact pratique :</strong> ${item.impact_pratique || 'N/A'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filtrer() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cat = document.getElementById('categoryFilter').value;
+
+            const resultat = tousLesArticles.filter(item => {
+                const matchQuery = (item.titre + ' ' + item.resume + ' ' + (item.mots_cles || []).join(' ')).toLowerCase().includes(query);
+                const matchCat = cat === 'toutes' || (item.categorie && item.categorie.includes(cat));
+                return matchQuery && matchCat;
+            });
+
+            afficherArticles(resultat);
+        }
+
+        chargerVeille();
+    </script>
+</body>
+</html>
