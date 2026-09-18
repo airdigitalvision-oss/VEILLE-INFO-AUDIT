@@ -1,112 +1,99 @@
 import os
 import json
+import re
 import feedparser
 import resend
-import google.generativeai as genai
 
-# Configuration de l'API Gemini
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
-genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash")
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+EMAIL_DESTINATAIRE = os.environ.get("EMAIL_DESTINATAIRE")
 
-# Configuration de Resend
-RESEND_KEY = os.environ.get("RESEND_API_KEY")
-EMAIL_TO = os.environ.get("EMAIL_DESTINATAIRE")
-if RESEND_KEY:
-    resend.api_key = RESEND_KEY
+resend.api_key = RESEND_API_KEY
 
-# Sources RSS officielles
-RSS_FEEDS = {
-    "BOFiP": "https://bofip.impots.gouv.fr/bofip/ext-rss.xml",
-    "Bercy Infos": "https://www.economie.gouv.fr/rss/rss-bercy-infos",
-    "Journal Officiel": "https://www.legifrance.gouv.fr/rss/jo"
-}
+# 1. Flux RSS stables et vérifiés
+RSS_FEEDS = [
+    {
+        "source": "BOFiP-Impôts",
+        "url": "https://bofip.impots.gouv.fr/bofip/ext/rss/actualites.xml",
+        "categorie": "Fiscalité"
+    },
+    {
+        "source": "Bercy Infos",
+        "url": "https://www.economie.gouv.fr/rss/rss-actualites",
+        "categorie": "Fiscalité"
+    },
+    {
+        "source": "ANC (Comptabilité)",
+        "url": "https://www.anc.gouv.fr/cms/render/live/fr/sites/anc/home/actualites.rss",
+        "categorie": "Comptabilité"
+    }
+]
 
-def charger_nouvelles():
-    articles = []
-    for source, url in RSS_FEEDS.items():
-        feed = feedparser.parse(url)
-        for entry in feed.entries[:3]:
-            articles.append({
-                "source": source,
-                "titre": entry.title,
-                "lien": entry.link,
-                "resume_brut": entry.get("summary", "")
-            })
-    return articles
+def nettoyer_html(texte):
+    """ Supprime les balises HTML et raccourcit le texte pour le résumé """
+    if not texte:
+        return ""
+    clean = re.sub(r'<[^>]+>', '', texte)
+    clean = ' '.join(clean.split())
+    return clean[:250] + "..." if len(clean) > 250 else clean
 
-def analyser_avec_gemini(articles):
-    if not articles:
-        return []
+articles_traites = []
+
+# 2. Lecture et extraction déterministe
+for feed_info in RSS_FEEDS:
+    # Utilisation d'un User-Agent pour éviter d'être bloqué par les serveurs officiels
+    feed = feedparser.parse(feed_info["url"], request_headers={'User-Agent': 'Mozilla/5.0'})
     
-    prompt = f"""
-    Tu es un expert-comptable et fiscaliste senior.
-    Analyse les actualités suivantes et génère un résumé structuré au format JSON pur (sans balises markdown).
-    
-    Articles :
-    {json.dumps(articles, ensure_ascii=False)}
+    for entry in feed.entries[:5]:
+        titre = entry.get("title", "Sans titre")
+        lien = entry.get("link", "#")
+        raw_desc = entry.get("summary", entry.get("description", ""))
+        resume = nettoyer_html(raw_desc)
 
-    Format de réponse attendu (liste d'objets JSON) :
-    [
-      {{
-        "source": "Nom de la source",
-        "titre": "Titre explicite",
-        "categorie": "Fiscalité / Comptabilité / Audit / Droit",
-        "mots_cles": ["TVA", "IS", etc.],
-        "resume": "Résumé clair en 2 phrases",
-        "impact_pratique": "Ce que ça change pour le cabinet ou le client",
-        "lien": "Lien officiel"
-      }}
-    ]
-    """
-    
-    response = model.generate_content(prompt)
-    texte_clean = response.text.replace("```json", "").replace("```", "").strip()
-    try:
-        return json.loads(texte_clean)
-    except:
-        return articles
+        articles_traites.append({
+            "source": feed_info["source"],
+            "titre": titre,
+            "lien": lien,
+            "categorie": feed_info["categorie"],
+            "resume": resume,
+            "impact_pratique": f"Consulter l'actualité officielle sur le site {feed_info['source']} pour les modalités d'application."
+        })
 
-def envoyer_email(synthese):
-    if not RESEND_KEY or not EMAIL_TO:
-        print("Clé Resend ou Email manquant. Saut de l'envoi d'e-mail.")
-        return
+print(f"Total d'articles récupérés : {len(articles_traites)}")
 
-    # Construction du contenu HTML de l'e-mail
-    html_content = "<h2>Voici votre Veille Fiscale & Comptable du jour</h2><hr>"
-    for item in synthese:
-        html_content += f"""
-        <div style='margin-bottom: 20px; padding: 10px; border-left: 4px solid #0055ff;'>
-            <span style='background: #e1ecf4; color: #00529b; padding: 3px 8px; border-radius: 3px; font-size: 12px;'>{item.get('categorie', 'Général')}</span>
-            <h3 style='margin: 5px 0;'><a href='{item.get('lien', '#')}'>{item.get('titre')}</a></h3>
-            <p><strong>Source :</strong> {item.get('source')}</p>
-            <p><strong>Résumé :</strong> {item.get('resume')}</p>
-            <p><strong>Impact pratique :</strong> {item.get('impact_pratique')}</p>
+# 3. Sauvegarde Réelle et Correction du Bug json.dump
+with open("data.json", "w", encoding="utf-8") as f:
+    json.dump(articles_traites, f, ensure_ascii=False, indent=2)
+
+# 4. Envoi de l'e-mail récapitulatif
+html_email = """
+<div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 600px; margin: auto;">
+    <h2 style="color: #0f172a; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">
+        📂 Veille Fiscale & Comptable du Jour
+    </h2>
+"""
+
+if not articles_traites:
+    html_email += "<p>Aucune nouvelle actualité disponible aujourd'hui sur les flux.</p>"
+else:
+    for art in articles_traites:
+        html_email += f"""
+        <div style="margin-bottom: 16px; padding: 12px; border-left: 4px solid #3b82f6; background-color: #f8fafc; border-radius: 4px;">
+            <span style="font-size: 10px; font-weight: bold; color: #2563eb; text-transform: uppercase;">[{art['categorie']}] — {art['source']}</span>
+            <h3 style="margin: 4px 0; font-size: 14px;"><a href="{art['lien']}" style="color: #0f172a; text-decoration: none;">{art['titre']}</a></h3>
+            <p style="font-size: 12px; color: #475569; margin: 6px 0;">{art['resume']}</p>
         </div>
         """
 
+html_email += "</div>"
+
+if RESEND_API_KEY and EMAIL_DESTINATAIRE:
     try:
         resend.Emails.send({
             "from": "Veille <onboarding@resend.dev>",
-            "to": [EMAIL_TO],
-            "subject": "📊 Veille Fiscale & Comptable du Jour",
-            "html": html_content
+            "to": [EMAIL_DESTINATAIRE],
+            "subject": f"Veille du jour — {len(articles_traites)} actualités",
+            "html": html_email
         })
         print("E-mail envoyé avec succès !")
     except Exception as e:
-        print(f"Erreur lors de l'envoi de l'e-mail : {e}")
-
-def main():
-    brut = charger_nouvelles()
-    synthese = analyser_avec_gemini(brut)
-    
-    # Sauvegarde des résultats
-    with open("data.json", "w", encoding="utf-8") as f:
-        json.dump(synthese, f, ensure_ascii=False, indent=2)
-    
-    # Envoi de la veille par e-mail
-    envoyer_email(synthese)
-    print("Mise à jour et envoi terminés !")
-
-if __name__ == "__main__":
-    main()
+        print(f"Erreur d'envoi mail : {e}")
