@@ -2,18 +2,18 @@ name: Veille Automatique
 
 on:
   schedule:
-    - cron: '0 6 * * *' # S'exécute à 6h UTC (8h heure française)
-  workflow_dispatch: # Permet de lancer la veille manuellement à tout moment
+    - cron: '0 6 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configurer Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -23,6 +23,8 @@ jobs:
       - name: Exécuter la veille avec Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_DESTINATAIRE: ${{ secrets.EMAIL_DESTINATAIRE }}
         run: python script.py
 
       - name: Enregistrer les résultats dans GitHub
