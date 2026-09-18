@@ -15,7 +15,7 @@ if RESEND_API_KEY:
 RSS_FEEDS = [
     {
         "source": "BOFiP (Direction Générale des Finances Publiques)",
-        "url": "https://bofip.impots.gouv.fr/flux-rss",
+        "url": "https://bofip.impots.gouv.fr/",
         "categorie": "Fiscalité"
     },
     {
