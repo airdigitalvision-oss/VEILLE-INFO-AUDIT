@@ -1,6 +1,7 @@
 import os
 import json
 import feedparser
+import resend
 import google.generativeai as genai
 
 # Configuration de l'API Gemini
@@ -8,7 +9,13 @@ GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_KEY)
 model = genai.GenerativeModel("gemini-2.5-flash")
 
-# Sources RSS officielles et sectorielles
+# Configuration de Resend
+RESEND_KEY = os.environ.get("RESEND_API_KEY")
+EMAIL_TO = os.environ.get("EMAIL_DESTINATAIRE")
+if RESEND_KEY:
+    resend.api_key = RESEND_KEY
+
+# Sources RSS officielles
 RSS_FEEDS = {
     "BOFiP": "https://bofip.impots.gouv.fr/bofip/ext-rss.xml",
     "Bercy Infos": "https://www.economie.gouv.fr/rss/rss-bercy-infos",
@@ -19,7 +26,7 @@ def charger_nouvelles():
     articles = []
     for source, url in RSS_FEEDS.items():
         feed = feedparser.parse(url)
-        for entry in feed.entries[:3]: # Récupère les 3 derniers articles par source
+        for entry in feed.entries[:3]:
             articles.append({
                 "source": source,
                 "titre": entry.title,
@@ -54,23 +61,52 @@ def analyser_avec_gemini(articles):
     """
     
     response = model.generate_content(prompt)
-    
-    # Nettoyage du résultat au format JSON
     texte_clean = response.text.replace("```json", "").replace("```", "").strip()
     try:
         return json.loads(texte_clean)
     except:
         return articles
 
+def envoyer_email(synthese):
+    if not RESEND_KEY or not EMAIL_TO:
+        print("Clé Resend ou Email manquant. Saut de l'envoi d'e-mail.")
+        return
+
+    # Construction du contenu HTML de l'e-mail
+    html_content = "<h2>Voici votre Veille Fiscale & Comptable du jour</h2><hr>"
+    for item in synthese:
+        html_content += f"""
+        <div style='margin-bottom: 20px; padding: 10px; border-left: 4px solid #0055ff;'>
+            <span style='background: #e1ecf4; color: #00529b; padding: 3px 8px; border-radius: 3px; font-size: 12px;'>{item.get('categorie', 'Général')}</span>
+            <h3 style='margin: 5px 0;'><a href='{item.get('lien', '#')}'>{item.get('titre')}</a></h3>
+            <p><strong>Source :</strong> {item.get('source')}</p>
+            <p><strong>Résumé :</strong> {item.get('resume')}</p>
+            <p><strong>Impact pratique :</strong> {item.get('impact_pratique')}</p>
+        </div>
+        """
+
+    try:
+        resend.Emails.send({
+            "from": "Veille <onboarding@resend.dev>",
+            "to": [EMAIL_TO],
+            "subject": "📊 Veille Fiscale & Comptable du Jour",
+            "html": html_content
+        })
+        print("E-mail envoyé avec succès !")
+    except Exception as e:
+        print(f"Erreur lors de l'envoi de l'e-mail : {e}")
+
 def main():
     brut = charger_nouvelles()
     synthese = analyser_avec_gemini(brut)
     
-    # Sauvegarde des résultats dans un fichier data.json
+    # Sauvegarde des résultats
     with open("data.json", "w", encoding="utf-8") as f:
         json.dump(synthese, f, ensure_ascii=False, indent=2)
     
-    print("Veille mise à jour avec succès !")
+    # Envoi de la veille par e-mail
+    envoyer_email(synthese)
+    print("Mise à jour et envoi terminés !")
 
 if __name__ == "__main__":
     main()
