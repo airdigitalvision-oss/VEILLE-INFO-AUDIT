@@ -1,11 +1,47 @@
 [
   {
+    "source": "Haute Autorité de l'Audit (H2A)",
+    "titre": "Décision à l’égard de M. François Jégard et la société Léo Jégard et Associés",
+    "lien": "https://h2a-france.org/publications/decision-a-legard-de-m-francois-jegard-et-la-societe-leo-jegard-et-associes/",
+    "categorie": "Audit",
+    "date": "18/09/2026",
+    "resume": "Décision à l’égard de M. François Jégard et la société Léo Jégard et Associés",
+    "impact_pratique": "Publication officielle du 18/09/2026 — Domaines : Audit."
+  },
+  {
+    "source": "Haute Autorité de l'Audit (H2A)",
+    "titre": "Synthèse du programme de contrôle 2025",
+    "lien": "https://h2a-france.org/publications/synthese-du-programme-de-controle-2025/",
+    "categorie": "Audit",
+    "date": "18/09/2026",
+    "resume": "Synthèse du programme de contrôle 2025",
+    "impact_pratique": "Publication officielle du 18/09/2026 — Domaines : Audit."
+  },
+  {
+    "source": "Haute Autorité de l'Audit (H2A)",
+    "titre": "Décision à l’égard de M. Régis Le Calonnec",
+    "lien": "https://h2a-france.org/publications/decision-a-legard-de-m-regis-le-calonnec-2/",
+    "categorie": "Audit",
+    "date": "15/09/2026",
+    "resume": "Décision à l’égard de M. Régis Le Calonnec",
+    "impact_pratique": "Publication officielle du 15/09/2026 — Domaines : Audit."
+  },
+  {
     "source": "BOFiP-Impôts (DGFIP)",
-    "titre": "Actualités réglementaires et commentaires de doctrine fiscale",
+    "titre": "Bulletin Officiel des Finances Publiques — Actualités et Doctrine Fiscale",
     "lien": "https://bofip.impots.gouv.fr/",
     "categorie": "Fiscalité",
     "date": "18/09/2026",
-    "resume": "Consultez les édictions et rescrits fiscaux récents publiés au Bulletin Officiel des Finances Publiques.",
+    "resume": "Consultez les mises à jour récentes du BOFiP concernant la doctrine fiscale, la TVA et l'impôt sur les sociétés.",
     "impact_pratique": "Publication du 18/09/2026 — À intégrer dans la veille réglementaire Fiscalité."
+  },
+  {
+    "source": "Autorité des Normes Comptables (ANC)",
+    "titre": "Règlements et Recueil des Normes Comptables Françaises (PCG)",
+    "lien": "https://www.anc.gouv.fr/",
+    "categorie": "Comptabilité",
+    "date": "18/09/2026",
+    "resume": "Mise à jour des règles relatives à la présentation des comptes annuels, du Plan Comptable Général et de la durabilité.",
+    "impact_pratique": "Publication du 18/09/2026 — À intégrer dans la veille réglementaire Comptabilité."
   }
 ]
